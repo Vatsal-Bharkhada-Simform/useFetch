@@ -17,18 +17,24 @@ export function Wrapper() {
 					<button onClick={() => fetchData()}>Fetch Data</button>
 				</div>
 				<div className="content_main">
-					{requestState.isLoading ? (
-						<div className="loadingState">Loading...</div>
-					) : (
-						<div className="content">
-							<div className="content_head">Data:</div>
-							<div className="content_body">
-								{data
-									? JSON.stringify(data.slice(0, 5), null, 6)
-									: "Data not fetched yet!"}
-							</div>
-						</div>
-					)}
+					<div className="content">
+						{requestState.isLoading ? (
+							<div className="loadingState">Loading...</div>
+						) : (
+							<>
+								<div className="content_head">Data:</div>
+								<div className="content_body">
+									{data
+										? JSON.stringify(
+												data.slice(0, 5),
+												null,
+												6
+											)
+										: "Data not fetched yet!"}
+								</div>
+							</>
+						)}
+					</div>
 				</div>
 			</div>
 		</div>
