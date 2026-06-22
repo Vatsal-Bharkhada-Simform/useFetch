@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 
 export function useFetch<T>(url: string, config?: RequestInit) {
-	const [data, setData] = useState<T>(null);
+	const [data, setData] = useState<T>();
 	const [requestState, setRequestState] = useState({
 		isLoading: false,
 		error: "",
@@ -37,7 +37,10 @@ export function useFetch<T>(url: string, config?: RequestInit) {
 		} catch (err) {
 			setRequestState({
 				isLoading: false,
-				error: err instanceof Error ? err.message : err,
+				error:
+					err instanceof Error
+						? err.message
+						: "Unexpected error occured",
 			});
 		}
 	}
