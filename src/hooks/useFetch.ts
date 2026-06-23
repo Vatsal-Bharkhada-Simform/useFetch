@@ -10,18 +10,19 @@ export function useFetch<T>(url: string, config?: RequestInit) {
 	const controllerRef = useRef<AbortController>(new AbortController());
 
 	async function fetchData() {
-		console.log("Fetch Data Called!!!");
+		controllerRef.current.abort();
+		controllerRef.current = new AbortController();
+
 		setRequestState({
 			isLoading: true,
 			error: "",
 		});
+
 		try {
 			const response = await fetch(url, {
 				...config,
 				signal: controllerRef.current.signal,
 			});
-
-			console.log(response);
 
 			if (!response.ok) {
 				throw new Error(response.statusText);
@@ -30,6 +31,7 @@ export function useFetch<T>(url: string, config?: RequestInit) {
 			const data = (await response.json()) as T;
 
 			setData(data);
+
 			setRequestState({
 				isLoading: false,
 				error: "",
@@ -47,7 +49,6 @@ export function useFetch<T>(url: string, config?: RequestInit) {
 
 	useEffect(() => {
 		return () => {
-			console.log("COMPONENT UNMOUNTED");
 			controllerRef.current.abort("Hook unmounted");
 		};
 	}, []);
