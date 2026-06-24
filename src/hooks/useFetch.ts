@@ -1,6 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 
-export function useFetch<T>(url: string, config?: RequestInit) {
+interface UseFetchReturnType<T> {
+	data: T;
+	requestState: {
+		isLoading: boolean;
+		error: string;
+	};
+	fetchData: () => void;
+}
+
+export function useFetch<T>(
+	url: string,
+	config?: RequestInit
+): UseFetchReturnType<T> {
 	const [data, setData] = useState<T>();
 	const [requestState, setRequestState] = useState({
 		isLoading: false,
