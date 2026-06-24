@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface UseFetchReturnType<T> {
-	data: T;
+	data: T | null;
 	requestState: {
 		isLoading: boolean;
 		error: string;
@@ -13,61 +13,71 @@ export function useFetch<T>(
 	url: string,
 	config?: RequestInit
 ): UseFetchReturnType<T> {
-	const [data, setData] = useState<T>();
+	const [data, setData] = useState<T | null>(null);
 	const [requestState, setRequestState] = useState({
 		isLoading: false,
 		error: "",
 	});
 
-	const controllerRef = useRef<AbortController>(new AbortController());
+	const controllerRef = useRef<AbortController>(null);
 
-	async function fetchData() {
-		controllerRef.current.abort();
+	if (controllerRef.current === null) {
 		controllerRef.current = new AbortController();
+	}
 
-		setRequestState({
-			isLoading: true,
-			error: "",
-		});
-
-		try {
-			const response = await fetch(url, {
-				...config,
-				signal: controllerRef.current.signal,
-			});
-
-			if (!response.ok) {
-				throw new Error(
-					response.statusText ||
-						"Error while fetching data. Response status code: " +
-							response.status
-				);
+	const fetchData = useCallback(
+		async function fetchData() {
+			if (controllerRef.current) {
+				controllerRef.current.abort();
 			}
-
-			const data = (await response.json()) as T;
-
-			setData(data);
-
+			controllerRef.current = new AbortController();
 			setRequestState({
-				isLoading: false,
+				isLoading: true,
 				error: "",
 			});
-		} catch (err) {
-			if (!controllerRef.current.signal.aborted) {
+
+			try {
+				const response = await fetch(url, {
+					...config,
+					signal: controllerRef.current.signal,
+				});
+
+				if (!response.ok) {
+					throw new Error(
+						response.statusText ||
+							"Error while fetching data. Response status code: " +
+								response.status
+					);
+				}
+
+				const responseData = (await response.json()) as T;
+				setData(responseData);
 				setRequestState({
 					isLoading: false,
-					error:
-						err instanceof Error
-							? err.message
-							: "Unexpected error occured",
+					error: "",
 				});
+			} catch (err) {
+				if (
+					controllerRef.current &&
+					!controllerRef.current.signal.aborted
+				) {
+					setRequestState({
+						isLoading: false,
+						error:
+							err instanceof Error
+								? err.message
+								: "Unexpected error occured",
+					});
+				}
 			}
-		}
-	}
+		},
+		[url, config]
+	);
 
 	useEffect(() => {
 		return () => {
-			controllerRef.current.abort("Hook unmounted");
+			if (controllerRef.current)
+				controllerRef.current.abort("Hook unmounted");
 		};
 	}, []);
 
