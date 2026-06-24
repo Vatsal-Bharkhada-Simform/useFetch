@@ -25,7 +25,11 @@ export function useFetch<T>(url: string, config?: RequestInit) {
 			});
 
 			if (!response.ok) {
-				throw new Error(response.statusText);
+				throw new Error(
+					response.statusText ||
+						"Error while fetching data. Response status code: " +
+							response.status
+				);
 			}
 
 			const data = (await response.json()) as T;
@@ -37,13 +41,15 @@ export function useFetch<T>(url: string, config?: RequestInit) {
 				error: "",
 			});
 		} catch (err) {
-			setRequestState({
-				isLoading: false,
-				error:
-					err instanceof Error
-						? err.message
-						: "Unexpected error occured",
-			});
+			if (!controllerRef.current.signal.aborted) {
+				setRequestState({
+					isLoading: false,
+					error:
+						err instanceof Error
+							? err.message
+							: "Unexpected error occured",
+				});
+			}
 		}
 	}
 

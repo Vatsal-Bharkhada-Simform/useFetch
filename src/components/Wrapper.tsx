@@ -6,7 +6,10 @@ export function Wrapper() {
 		"https://jsonplaceholder.typicode.com/posts"
 	);
 
-	console.log(data);
+	if (requestState.error) {
+		console.error(requestState.error);
+		return <h2>Error occured while fetching data!</h2>;
+	}
 
 	return (
 		<div className="wrapper">
