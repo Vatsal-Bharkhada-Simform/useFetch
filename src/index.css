@@ -48,56 +48,41 @@ header {
 			transition: all 0.3s;
 		}
 
-		input {
-			padding: 1rem;
-			background-color: #f3ece4;
-			border: 1px solid #927768;
-			border-radius: 5rem;
-			font-family: inherit;
-			outline: none;
-			font-size: 1rem;
-			color: #69422b;
-			font-weight: 600;
-			transition: all 0.3s;
-		}
-
 		.wrapper_content {
 			display: flex;
 			flex-direction: column;
 			gap: 1rem;
+
+			.content_main {
+				background-color: #fff;
+				border: 1px solid #bbb;
+				border-radius: 1rem;
+				overflow: hidden;
+			}
+
+			.content {
+				display: flex;
+				flex-direction: column;
+
+				.content_head {
+					padding: 1rem;
+					border-bottom: 1px solid #bbb;
+				}
+
+				.content_body {
+					max-height: 30vh;
+					overflow-y: auto;
+					padding: 1rem;
+					white-space: pre-wrap;
+					word-break: break-all;
+					line-height: 1.4;
+				}
+			}
 		}
 
 		.action {
 			display: inline-flex;
 			gap: 0.8rem;
 		}
-
-		.action-col {
-			display: inline-flex;
-			flex-direction: column;
-			gap: 0.8rem;
-		}
-
-		.dark {
-			button {
-				background-color: #927768;
-				color: #f3ece4;
-			}
-
-			input {
-				background-color: inherit;
-				border-color: #f3ece4;
-				color: #f3ece4;
-			}
-		}
-	}
-
-	.wrapper:has(.dark) {
-		background-color: #69422b;
-		color: #f3ece4;
-		border-color: #4b2d1c;
-		box-shadow: -6px 6px 0px 0px #4b2d1c;
-
-		transition: all 0.3s;
 	}
 }
